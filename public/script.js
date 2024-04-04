@@ -50,3 +50,46 @@ function fetchItems() {
     })
     .catch(error => console.error('Error fetching items:', error));
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const list = document.querySelector('.list ul');
+
+    list.addEventListener('click', function(event) {
+        const target = event.target;
+        
+        if (target.tagName === 'LI') {
+            target.classList.toggle('highlighted');
+        }
+        
+        list.querySelectorAll('li').forEach(function(li) {
+            if (li !== target) {
+                li.classList.remove('highlighted');
+            }
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+        const target = event.target;
+        
+        if (target.tagName !== 'LI' && !list.contains(target)) {
+            list.querySelectorAll('li').forEach(function(li) {
+                li.classList.remove('highlighted');
+            });
+        }
+    });
+});
+
+
+function addItem() {
+    const input = document.getElementById('itemName');
+    const itemName = input.value.trim();
+    
+    if (itemName !== '') {
+        const list = document.querySelector('.list ul');
+        const li = document.createElement('li');
+        li.textContent = itemName;
+        list.appendChild(li);
+        
+        input.value = '';
+    }
+}
