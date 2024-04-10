@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function addItem() {
-    const itemName = document.getElementById('itemName').value;
+    const input = document.getElementById('itemName');
+    const itemName = input.value.trim();
     if (!itemName) return;
 
     fetch('/add-item', {
@@ -20,17 +21,23 @@ function addItem() {
         },
         body: JSON.stringify({ name: itemName, date: new Date().toISOString().split('T')[0] }),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to add item');
+        }
+        return response.json();
+    })
     .then(data => {
         console.log('Item added:', data);
         const list = document.querySelector('.list ul');
         const listItem = document.createElement('li');
         listItem.textContent = itemName;
         list.appendChild(listItem);
-        document.getElementById('itemName').value = '';
+        input.value = '';
     })
     .catch(error => console.error('Error:', error));
 }
+
 
 document.addEventListener('DOMContentLoaded', function() {
     fetchItems();
@@ -80,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-function addItem() {
+function addItemOnEnter() {
     const input = document.getElementById('itemName');
     const itemName = input.value.trim();
     
