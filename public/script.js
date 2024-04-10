@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addItem();
         }
     });
+
 });
 
 function addItem() {
@@ -32,6 +33,7 @@ function addItem() {
         const list = document.querySelector('.list ul');
         const listItem = document.createElement('li');
         listItem.textContent = itemName;
+        listItem.setAttribute('data-id', data.id);//
         list.appendChild(listItem);
         input.value = '';
     })
@@ -52,6 +54,7 @@ function fetchItems() {
         items.forEach(item => {
             const listItem = document.createElement('li');
             listItem.textContent = `${item.name}`;
+            listItem.setAttribute('data-id', item.id);//
             listElement.appendChild(listItem);
         });
     })
@@ -86,17 +89,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
-function addItemOnEnter() {
-    const input = document.getElementById('itemName');
-    const itemName = input.value.trim();
-    
-    if (itemName !== '') {
-        const list = document.querySelector('.list ul');
-        const li = document.createElement('li');
-        li.textContent = itemName;
-        list.appendChild(li);
-        
-        input.value = '';
+function deleteHighlightedItem() {
+    const highlightedItem = document.querySelector('.highlighted');
+    if (!highlightedItem) {
+        return; // No item is highlighted, so do nothing
     }
+
+    const itemId = highlightedItem.getAttribute('data-id');
+    fetch(`/delete-item/${itemId}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to delete item');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.message);
+        highlightedItem.remove(); // Remove the item visually from the list
+    })
+    .catch(error => console.error('Error:', error));
 }

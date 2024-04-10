@@ -50,3 +50,16 @@ script.get('/get-items', (req, res) => {
       res.json(rows);
   });
 });
+
+script.delete('/delete-item/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `DELETE FROM list WHERE id = ?`;
+
+  db.run(sql, id, function(err) {
+      if (err) {
+          res.status(500).json({error: err.message});
+          return;
+      }
+      res.json({message: 'Deleted successfully'});
+  });
+});
