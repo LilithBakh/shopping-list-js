@@ -99,3 +99,14 @@ li:hover {
 .highlighted:hover {
     opacity: 1;
 }
+
+ul input {
+    width: 200px;
+}
+
+#alert {
+    font-style: italic;
+    color: #e797dc;
+    margin-top: 8px;
+    display: block;
+}

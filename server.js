@@ -63,3 +63,18 @@ script.delete('/delete-item/:id', (req, res) => {
       res.json({message: 'Deleted successfully'});
   });
 });
+
+script.patch('/update-item/:id', (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body; 
+  const sql = `UPDATE list SET name = ? WHERE id = ?`;
+
+  db.run(sql, [name, id], function(err) {
+      if (err) {
+          console.error(err.message);
+          res.status(500).json({ error: err.message });
+          return;
+      }
+      res.json({ message: 'Updated successfully', id, name });
+  });
+});
