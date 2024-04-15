@@ -13,7 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function addItem() {
     const input = document.getElementById('itemName');
     const itemName = input.value.trim();
-    if (!itemName) return;
+    let alert = document.getElementById('alert');
+    if (!itemName) {
+        alert.textContent = 'Input should not be empty';
+        return  
+    } else {
+        alert.textContent = ''
+    }; 
 
     fetch('/add-item', {
         method: 'POST',
@@ -91,11 +97,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function deleteHighlightedItem() {
     const highlightedItem = document.querySelector('.highlighted');
+    let alert = document.getElementById('alert');
     if (!highlightedItem) {
-        let alert = document.getElementById('alert');
         alert.textContent = 'Please select an item to delete';
         return;
-    }
+    } else {
+        alert.textContent = ''
+    }; 
 
     const itemId = highlightedItem.getAttribute('data-id');
     fetch(`/delete-item/${itemId}`, {
@@ -114,6 +122,12 @@ function deleteHighlightedItem() {
     .catch(error => console.error('Error:', error));
 }
 
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Delete') {
+        deleteHighlightedItem();
+    }
+});
+
 let isEditing = false;
 let currentlyEditingItem = null;
 
@@ -121,15 +135,30 @@ function editHighlightedItem() {
     const editButton = document.getElementById('editButton');
     if (!isEditing) {
         const highlightedItem = document.querySelector('.highlighted');
+        let alert = document.getElementById('alert');
+
         if (!highlightedItem) {
-            let alert = document.getElementById('alert');
             alert.textContent = 'Please select an item to edit';
             return;
-        }
+        } else {
+            alert.textContent = ''
+        }; 
 
         currentlyEditingItem = highlightedItem;
 
         const input = document.createElement('input');
+        
+        input.addEventListener('mouseover', function() {
+            this.style.backgroundColor = '#3B2C5B';
+            this.style.color = '#E4E0E9';
+        });
+
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                confirmEdit();
+            }
+        });
+
         input.type = 'text';
         input.value = highlightedItem.textContent;
         highlightedItem.textContent = '';
@@ -139,36 +168,43 @@ function editHighlightedItem() {
         editButton.textContent = 'Confirm';
         isEditing = true;
     } else {
-        const input = currentlyEditingItem.querySelector('input');
-        const newText = input.value.trim();
-
-        if (!newText) {
-            alert('The text cannot be empty.');
-            return;
-        }
-
-        const itemId = currentlyEditingItem.getAttribute('data-id');
-        fetch(`/update-item/${itemId}`, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ name: newText })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to update item');
-            }
-            return response.json();
-        })
-        .then(data => {
-            currentlyEditingItem.textContent = newText;
-            currentlyEditingItem.classList.remove('highlighted');
-            editButton.textContent = 'Edit';
-            isEditing = false;
-            currentlyEditingItem = null;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update the item. See console for details.');
-        });
+        confirmEdit(); 
     }
+}
+
+function confirmEdit() {
+    const input = currentlyEditingItem.querySelector('input');
+    const newText = input.value.trim();
+    let alert = document.getElementById('alert');
+
+    if (!newText) {
+        alert.textContent = 'Edited text cannot be empty';
+        return;
+    } else {
+            alert.textContent = ''
+        }; 
+
+    const itemId = currentlyEditingItem.getAttribute('data-id');
+    fetch(`/update-item/${itemId}`, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name: newText })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to update item');
+        }
+        return response.json();
+    })
+    .then(data => {
+        currentlyEditingItem.textContent = newText;
+        currentlyEditingItem.classList.remove('highlighted');
+        document.getElementById('editButton').textContent = 'Edit';
+        isEditing = false;
+        currentlyEditingItem = null;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update the item. See console for details.');
+    });
 }
