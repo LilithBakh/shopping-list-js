@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     fetchItems();
 
+    //Enable adding items with enter key press
     document.getElementById('itemName').addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -8,8 +9,55 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    //Adding highlighted class to clicked LI
+    const list = document.querySelector('.list ul');
+
+    list.addEventListener('click', function(event) {
+        const target = event.target;
+        
+        if (target.tagName === 'LI') {
+            target.classList.toggle('highlighted');
+        }
+        
+        list.querySelectorAll('li').forEach(function(li) {
+            if (li !== target) {
+                li.classList.remove('highlighted');
+            }
+        });
+    });
+    
+    //Removing the highlightrd class when clicked away from LI
+    document.addEventListener('click', function(event) {
+        const target = event.target;
+        
+        if (target.tagName !== 'LI' && !list.contains(target)) {
+            list.querySelectorAll('li').forEach(function(li) {
+                li.classList.remove('highlighted');
+            });
+        }
+    });
+
+    //On double click add line-through text decoration
+    list.addEventListener('dblclick', function(event) {
+        const target = event.target;
+        
+        if (target.tagName === 'LI') {
+            if (target.style.textDecoration === 'line-through') {
+                target.style.textDecoration = 'none';
+            } else {
+                target.style.textDecoration = 'line-through';
+            }
+        }
+        
+        list.querySelectorAll('li').forEach(function(li) {
+            if (li !== target) {
+                li.classList.remove('highlighted');
+            }
+        });
+    });
 });
 
+//Function to add items
 function addItem() {
     const input = document.getElementById('itemName');
     const itemName = input.value.trim();
@@ -46,11 +94,7 @@ function addItem() {
     .catch(error => console.error('Error:', error));
 }
 
-
-document.addEventListener('DOMContentLoaded', function() {
-    fetchItems();
-});
-
+//Function to get items
 function fetchItems() {
     fetch('/get-items')
     .then(response => response.json())
@@ -67,34 +111,7 @@ function fetchItems() {
     .catch(error => console.error('Error fetching items:', error));
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const list = document.querySelector('.list ul');
-
-    list.addEventListener('click', function(event) {
-        const target = event.target;
-        
-        if (target.tagName === 'LI') {
-            target.classList.toggle('highlighted');
-        }
-        
-        list.querySelectorAll('li').forEach(function(li) {
-            if (li !== target) {
-                li.classList.remove('highlighted');
-            }
-        });
-    });
-
-    document.addEventListener('click', function(event) {
-        const target = event.target;
-        
-        if (target.tagName !== 'LI' && !list.contains(target)) {
-            list.querySelectorAll('li').forEach(function(li) {
-                li.classList.remove('highlighted');
-            });
-        }
-    });
-});
-
+//Function to delete items
 function deleteHighlightedItem() {
     const highlightedItem = document.querySelector('.highlighted');
     let alert = document.getElementById('alert');
@@ -128,6 +145,7 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+//Function to edit items
 let isEditing = false;
 let currentlyEditingItem = null;
 
