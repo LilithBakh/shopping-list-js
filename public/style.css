@@ -110,3 +110,28 @@ ul input {
     margin-top: 8px;
     display: block;
 }
+
+@media only screen and (max-width: 620px) {
+    h1 {
+        font-size: 30px;
+    }
+
+    #itemName {
+        width: 140px;
+        font-size: 12px;
+    }
+
+    .input-wrap button { 
+        padding: 2px;
+        font-size: 12px;
+    }
+
+    li {
+        font-size: 12px;
+    }
+
+    .buttons-wrap button {
+        width: 90px;
+        font-size: 12px;
+    }
+  }
